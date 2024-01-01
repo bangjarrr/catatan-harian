@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    button {
+      cursor: pointer;
+      background: darkcyan;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+    }
+    
+    button:hover {
+        transform: scale(1.1);
+        transition: all;
+        transition-duration: 1.1s;
+        background: darkslateblue;
+        box-shadow: 1px 1px 10px red;
+    }
+
+    #notes {
+      margin-top: 20px;
+    }
+
+    .note {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #2222;
+    }
+
+    .delete-btn {
+      margin-left: 10px;
+      color: red;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <textarea id="noteInput" placeholder="Tulis catatan..."></textarea>
+  <button onclick="saveNote()">Simpan Catatan</button>
+
+  <div id="notes"></div>
+
+  <script>
+    // Menampilkan catatan dari localStorage saat halaman dimuat
+    window.onload = function() {
+      displayNotes();
+    };
+
+    function saveNote() {
+      const noteInput = document.getElementById('noteInput');
+      const notesContainer = document.getElementById('notes');
+
+      // Mendapatkan catatan yang sudah ada dari localStorage
+      const existingNotes = JSON.parse(localStorage.getItem('notes')) || [];
+
+      // Menambahkan catatan baru
+      const newNote = {
+        content: noteInput.value,
+        timestamp: new Date().toLocaleString()
+      };
+
+      existingNotes.push(newNote);
+
+      // Menyimpan catatan ke localStorage
+      localStorage.setItem('notes', JSON.stringify(existingNotes));
+
+      // Menampilkan ulang catatan
+      displayNotes();
+
+      // Mengosongkan input
+      noteInput.value = '';
+    }
+
+    function deleteNote(index) {
+      // Mendapatkan catatan yang sudah ada dari localStorage
+      const existingNotes = JSON.parse(localStorage.getItem('notes')) || [];
+
+      // Menghapus catatan berdasarkan index
+      existingNotes.splice(index, 1);
+
+      // Menyimpan catatan yang baru ke localStorage
+      localStorage.setItem('notes', JSON.stringify(existingNotes));
+
+      // Menampilkan ulang catatan
+      displayNotes();
+    }
+
+    function displayNotes() {
+      const notesContainer = document.getElementById('notes');
+      notesContainer.innerHTML = '';
+
+      // Mendapatkan catatan yang sudah ada dari localStorage
+      const existingNotes = JSON.parse(localStorage.getItem('notes')) || [];
+
+      existingNotes.forEach((note, index) => {
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note';
+        noteElement.innerHTML = `<p>${note.content}</p><p><em>${note.timestamp}</em></p>`;
+        
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'delete-btn';
+        deleteButton.innerHTML = 'Hapus';
+        deleteButton.onclick = () => deleteNote(index);
+
+        noteElement.appendChild(deleteButton);
+        notesContainer.appendChild(noteElement);
+      });
+    }
+  </script>
+</body>
+</html>
